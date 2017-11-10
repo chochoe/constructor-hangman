@@ -1,6 +1,118 @@
+var inquirer = require("inquirer");
 var word = require("./construct-word.js");
-var letter = require("./constructor-letter.js");
 
+var winCounter = 0;
+var lossCounter = 0;
+var numGuesses = 9;
+
+wordInPlay: null,
+lettersOfTheWord: [],
+matchedLetters: [],
+guessedLetters: [],
+guessesLeft: 0,
+totalGuesses: 0,
+letterGuessed: null,
+wins: 0,
+
+function setupGame() {
+	var objKeys = Object.keys(Word.wordsToPick);
+	this.wordInPlay = objKeys[Math.floor(Math.random() * objKeys.length)];
+	this.lettersOfTheWord = this.wordInPlay.aplit("");
+	this.rebuildWordView();
+	this.processUpdateTotalGuesses();
+},
+
+function updatePage() {
+	if (this.guessesLeft === 0) {
+		this.restartGame();
+	} else {
+		this.updateGuesses(letter);
+		this.updateMatchedLetters(letter);
+		this.rebuildWordView();
+		if (this.updateWins() === true) {
+			this.restartGame();
+		}
+	}
+},
+
+function wordGuess() {
+	inquirer.prompt([
+	  {
+	    name: "menu",
+	    type: "list",
+	    message: "Great Bay Welcomes You",
+	    choices: ["Post", "Bid"]
+	  }
+	]
+	// ).then(function(inquirerResponse) {
+
+	// });
+},
+
+function updateGuesses() {
+    if ((this.guessedLetters.indexOf(letter) === -1) && (this.lettersOfTheWord.indexOf(letter) === -1)) {
+      this.guessedLetters.push(letter);
+      this.guessesLeft--;
+      this.guessedLetters.join(", ");
+    }
+  },
+
+function processUpdateTotalGuesses() {
+	this.totalGuesses = this.lettersOfTheWord.length + 5;
+    this.guessesLeft = this.totalGuesses;
+},
+
+function updateMatchedLetters() {
+	for (var i = 0; i < this.lettersOfTheWord.length; i++) {
+      if ((letter === this.lettersOfTheWord[i]) && (this.matchedLetters.indexOf(letter) === -1)) {
+        this.matchedLetters.push(letter);
+        }
+    }    
+},
+
+function rebuildWordView() {
+    var wordView = ""
+    for (var i = 0; i < this.lettersOfTheWord.length; i++) {
+      if (this.matchedLetters.indexOf(this.lettersOfTheWord[i]) !== -1) {
+        wordView += this.lettersOfTheWord[i];
+      }
+      else {
+        wordView += "&nbsp;_&nbsp;";
+      }
+    }
+},
+
+function restartGame() {
+	this.wordInPlay = null;
+    this.lettersOfTheWord = [];
+    this.matchedLetters = [];
+    this.guessedLetters = [];
+    this.guessesLeft = 0;
+    this.totalGuesses = 0;
+    this.letterGuessed = null;
+    this.setupGame();
+    this.rebuildWordView();
+},
+
+function updateWins() {
+    var win;
+    if (this.matchedLetters.length === 0) {
+      win = false;
+    }
+    else {
+      win = true;
+    }
+    for (var i = 0; i < this.lettersOfTheWord.length; i++) {
+      if (this.matchedLetters.indexOf(this.lettersOfTheWord[i]) === -1) {
+        win = false;
+      }
+    }
+    if (win) {
+      this.wins = this.wins + 1;
+      return true;
+    }
+    return false;
+  }
 // pick random word (string)
 // blank string for input with length of how many letters in word
 // user guesses a letter
@@ -11,8 +123,6 @@ var letter = require("./constructor-letter.js");
 // game won when all blanks filled
 
 
-// put words into array
-// math.random to generate random number
 // number is used as index within array
 
 // use underscore for each letter in word
@@ -30,7 +140,6 @@ var letter = require("./constructor-letter.js");
 
 
 
-// var word = ["one", "two", "three"]
 // var index = Math.floor(Math.random())
 // word[index]
 
@@ -50,3 +159,16 @@ var letter = require("./constructor-letter.js");
 // if (!blank.includes("_"))
 // else if (guesses == 0)
 
+
+// OLD CODE JUST IN CASE
+
+// // Initialize the game when the page loads.
+// hangmanGame.setupGame();
+
+// // When a key is pressed..
+// document.onkeyup = function(event) {
+//   // Capture pressed key and make it lowercase.
+//   hangmanGame.letterGuessed = String.fromCharCode(event.keyCode).toLowerCase();
+//   // Pass the guessed letter into our updatePage function to run the game logic.
+//   hangmanGame.updatePage(hangmanGame.letterGuessed);
+// };
